@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reykjavik.tv — Live Northern Lights &amp; Volcano Cams from Iceland</title>
 
-<meta name="description" content="Watch live webcams from Iceland. Real-time Reykjavik city views, Fagradalsfjall volcano tracking, and Kirkjufell aurora cams. Live NOAA KP-index and weather updates.">
-<meta name="keywords" content="reykjavik tv, live iceland webcam, northern lights tracker, iceland volcano live, kirkjufell cam, kp index live, aurora forecast iceland">
+<meta name="description" content="Watch live webcams from Iceland. Real-time Iceland volcano tracking, aurora observations, and Holar live cams. Live NOAA KP-index and weather updates.">
+<meta name="keywords" content="reykjavik tv, live iceland webcam, northern lights tracker, iceland volcano live, holar livecam, kp index live, aurora forecast iceland">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://reykjavik.tv/">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://reykjavik.tv/">
 <meta property="og:title" content="Reykjavik.tv — Live Northern Lights &amp; Volcano Cams from Iceland">
-<meta property="og:description" content="Experience Iceland live. Real-time webcams tracking volcanoes, northern lights, and Reykjavik skyline with live geomagnetic KP-index data.">
+<meta property="og:description" content="Experience Iceland live. Real-time webcams tracking volcanoes, northern lights, and live geomagnetic KP-index data.">
 <meta property="og:image" content="https://images.unsplash.com/photo-1529963183134-61a90db47eaf?q=80&w=1200&auto=format&fit=crop">
 
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content="https://reykjavik.tv/">
 <meta property="twitter:title" content="Reykjavik.tv — Live Northern Lights &amp; Cams">
-<meta property="twitter:description" content="Watch live webcams from Iceland. Real-time volcano tracking, aurora forecast, and Reykjavik live views.">
+<meta property="twitter:description" content="Watch live webcams from Iceland. Real-time volcano tracking, aurora forecast, and live views.">
 <meta property="twitter:image" content="https://images.unsplash.com/photo-1529963183134-61a90db47eaf?q=80&w=1200&auto=format&fit=crop">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,26 +31,22 @@
   "@type": "WebApplication",
   "name": "Reykjavik.tv",
   "url": "https://reykjavik.tv/",
-  "description": "Live streaming webcam portal from Iceland featuring Reykjavik city views, volcano monitoring, and real-time Northern Lights KP-index forecasting.",
+  "description": "Live streaming webcam portal from Iceland featuring live volcano monitoring, Holar view, and real-time Northern Lights KP-index forecasting.",
   "applicationCategory": "TravelApplication",
   "operatingSystem": "All",
   "about": [
     {
       "@type": "Place",
-      "name": "Reykjavik, Iceland",
+      "name": "Iceland",
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": "64.1355",
-        "longitude": "-21.8954"
+        "latitude": "64.9631",
+        "longitude": "-19.0208"
       }
     },
     {
       "@type": "Volcano",
       "name": "Fagradalsfjall Volcano"
-    },
-    {
-      "@type": "Mountain",
-      "name": "Kirkjufell"
     }
   ]
 }
@@ -112,6 +108,7 @@
   main.main-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-top:20px;}
   .cam-col{display:flex;flex-direction:column;gap:16px;}
   .cam-card{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--panel);}
+  .cam-card .dot{width:6px;height:6px;border-radius:50%;background:var(--aurora1);display:inline-block;box-shadow:0 0 8px var(--aurora1);animation:pulse 2s infinite;}
   .cam-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);}
   .cam-name{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;}
   .cam-name strong{color:var(--text);font-size:.78rem;}
@@ -272,13 +269,13 @@
     <section class="cam-col" aria-label="Live Webcam Streams">
       <div class="cam-card">
         <div class="cam-head">
-          <div class="cam-name"><div class="dot" style="width:5px;height:5px"></div><strong id="camName">—</strong></div>
+          <div class="cam-name"><div class="dot"></div><strong id="camName">—</strong></div>
         </div>
         <div class="cam-embed">
-          <iframe id="camFrame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen title="Reykjavik Live Monitor"></iframe>
+          <iframe id="camFrame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen title="Iceland Live Monitor"></iframe>
         </div>
         <div class="cam-bar">
-          <span class="loc" id="camLoc">Reykjavik, Iceland</span>
+          <span class="loc" id="camLoc">Iceland</span>
           <span class="ts" id="localTime">—</span>
         </div>
       </div>
@@ -321,9 +318,9 @@
 const CAMERAS = [
   {
     id: "4B-xBkUX4jM",
-    name: "Reykjavík — Volcano Watch",
-    loc: "Reykjavík Centre & Skyline View",
-    emoji: "🏙️"
+    name: "Iceland — Volcano Watch",
+    loc: "Iceland Volcanoes",
+    emoji: "🌋"
   },
   {
     id: "kXD4A9uFHcg",
@@ -333,7 +330,7 @@ const CAMERAS = [
   },
   {
     id: "_0EQvcdPl8w",
-    name: "Kirkjufell — Hólar LiveCam",
+    name: "Hólar — Hólar LiveCam",
     loc: "Kirkjufell Mountain, Snæfellsnes",
     emoji: "🏔️"
   }
@@ -472,14 +469,31 @@ async function loadKP() {
     const upd = new Date(items[items.length - 1].time + 'Z');
     document.getElementById('kpUp').textContent = 'Updated ' + upd.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: TZ }) + ' RVK';
 
-    // Fixed trend sync loop logic
+    // Reliable Time-stamp based trend sync
     let fcHTML = '';
-    const totalItems = items.length;
+    const latestTime = new Date(items[items.length - 1].time + 'Z').getTime();
+
     for(let i = 0; i < 8; i++) {
-      // Step back in 3-hour increments (180 minutes)
-      const targetIdx = Math.max(0, totalItems - 1 - (i * 180));
-      const entry = items[targetIdx];
-      const kv = entry ? entry.kp : 3.0;
+      // Calculate target time for each 3-hour block down the line
+      const targetTimeMs = latestTime - (i * 3 * 60 * 60 * 1000);
+      
+      // Find the closest data point in the array
+      let closestEntry = items[items.length - 1];
+      let minDiff = Infinity;
+      
+      for(let j = items.length - 1; j >= 0; j--) {
+        const entryTimeMs = new Date(items[j].time + 'Z').getTime();
+        const diff = Math.abs(entryTimeMs - targetTimeMs);
+        if(diff < minDiff) {
+          minDiff = diff;
+          closestEntry = items[j];
+        } else if (diff > minDiff) {
+          // Array is ordered, once difference grows we can break early
+          break;
+        }
+      }
+
+      const kv = closestEntry ? closestEntry.kp : 3.0;
       const pct = Math.min(kv / 9 * 100, 100);
       
       let bs = 'background:linear-gradient(90deg,var(--aurora2),var(--aurora1));box-shadow:0 0 6px var(--aurora1)', vc = 'var(--aurora1)';
