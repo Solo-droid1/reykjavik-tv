@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reykjavik.tv - Live Aurora & Weather Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --card-bg: rgba(20, 27, 45, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --accent: #00ffcc;
+            --warn: #ffaa00;
+            --black: #0b0f19;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, var(--muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .big-data {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-top: auto;
+        }
+
+        .unit {
+            font-size: 1.5rem;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        /* For Sale Banner animációk és reszponzív stílus */
+        .sale-banner {
+            border: 1px dashed var(--warn);
+            border-radius: 12px;
+            background: rgba(255, 170, 0, 0.03);
+            padding: 20px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        .sale-text h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--warn);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sale-text p {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .sale-btn {
+            display: inline-block;
+            background: var(--warn);
+            color: var(--black);
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            box-shadow: 0 0 12px rgba(255, 170, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+
+        .sale-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.4);
+        }
+
+        footer {
+            text-align: center;
+            color: var(--sidebar-border);
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Reykjavik.tv</h1>
+        <p class="subtitle">Live Northern Lights Forecast &amp; Weather Dashboard</p>
+    </header>
+
+    <!-- FŐ TARTALMI RÁCS -->
+    <div class="grid">
+        
+        <!-- 1. Kártya: Aurora előrejelzés -->
+        <div class="card">
+            <div class="card-title">✨ Aurora Activity</div>
+            <div class="big-data" style="color: var(--accent);">4 <span class="unit">KP Index</span></div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Active aurora displays visible overhead. Clear skies recommended.</p>
+        </div>
+
+        <!-- 2. Kártya: Időjárás -->
+        <div class="card">
+            <div class="card-title">🌡️ Current Weather</div>
+            <div class="big-data">-2<span class="unit">°C</span></div>
+            <p style="color: var(--muted); font-size: 0.85rem;">Reykjavik area. Light snow, wind blowing from NNE at 5 m/s.</p>
+        </div>
+
+        <!-- 3. Kártya: Helyi idő -->
+        <div class="card">
+            <div class="card-title">🕒 Local Time</div>
+            <div class="big-data" id="local-time">00:00</div>
+            <p style="color: var(--muted); font-size: 0.85rem;">GMT / UTC timezone. Updates automatically.</p>
+        </div>
+
+    </div><!-- /grid -->
+
+
+    <!-- ================================================================= -->
+    <!-- 🚀 IDE ILLESZTETTEM BE: PREMIUM DOMAIN FOR SALE BANNER          -->
+    <!-- ================================================================= -->
+    <div class="sale-banner">
+        <div class="sale-text">
+            <h3>Premium Project &amp; Domain For Sale</h3>
+            <p>Like this live aurora tracker concept? The premium domain <strong style="color: var(--text);">Reykjavik.tv</strong> and this complete web layout are available for purchase.</p>
+        </div>
+        <a href="https://www.afternic.com/domain/REYKJAVIK.TV" target="_blank" class="sale-btn">
+            Make an Offer &rarr;
+        </a>
+    </div>
+    <!-- ================================================================= -->
+
+
+    <footer>
+        <p>&copy; 2026 Reykjavik.tv — Live Iceland Dashboard Concept</p>
+    </footer>
+
+    <script>
+        // Élő óra frissítése
+        function updateTime() {
+            const options = { timeZone: 'Atlantic/Reykjavik', hour: '2-digit', minute: '2-digit', hour12: false };
+            const formatter = new Intl.DateTimeFormat('en-US', options);
+            document.getElementById('local-time').textContent = formatter.format(new Date());
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+
+</body>
+</html>
