@@ -82,4 +82,316 @@
   .widget{border:1px solid var(--border);border-radius:8px;background:var(--panel);overflow:hidden;}
   .whead{padding:12px 16px;border-bottom:1px solid var(--border);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:space-between;}
   .whead span{color:var(--aurora2);}
-  .loading{padding:20px;text-align:center;font-size:.7rem;color:var(--muted);animation
+  .loading{padding:20px;text-align:center;font-size:.7rem;color:var(--muted);animation:blink 1.2s ease infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+  .wbody{padding:18px 16px;}
+  .now{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+  .wicon{font-size:2.8rem;line-height:1;}
+  .wtemp{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;line-height:1;}
+  .wtemp small{font-size:.9rem;color:var(--muted);font-weight:400;}
+  .wdesc{font-size:.7rem;color:var(--muted);margin-top:2px;}
+  .wstats{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .wstat{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:5px;padding:8px 10px;}
+  .wstat-l{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+  .wstat-v{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;}
+  .forecast{margin-top:14px;display:flex;gap:6px;}
+  .fday{flex:1;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:5px;padding:8px 4px;text-align:center;}
+  .fday .dn{font-size:.55rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+  .fday .di{font-size:1rem;margin-bottom:4px;}
+  .fday .dt{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;}
+
+  .kp-fc{padding:14px 16px;}
+  .krow{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+  .krow:last-child{border-bottom:none;}
+  .kt{font-size:.65rem;color:var(--muted);width:52px;}
+  .kbw{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .kbf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--aurora2),var(--aurora1));box-shadow:0 0 6px var(--aurora1);transition:width .8s ease;}
+  .kv{font-size:.65rem;color:var(--aurora1);width:28px;text-align:right;}
+
+  .sunbody{padding:14px 16px;}
+  .srow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.7rem;}
+  .srow:last-child{border-bottom:none;}
+  .srow .l{color:var(--muted);}
+  .srow .v{font-family:'Syne',sans-serif;font-weight:700;}
+  .srow .v.s{color:var(--aurora1);}
+
+  .sale-banner {
+    margin-top: 30px;
+    border: 1px dashed var(--warn);
+    border-radius: 8px;
+    background: rgba(255, 170, 0, 0.03);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .sale-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--warn);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sale-text p {
+    font-size: .75rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .sale-btn {
+    display: inline-block;
+    background: var(--warn);
+    color: var(--black);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    padding: 12px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    box-shadow: 0 0 12px rgba(255, 170, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+  .sale-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.4);
+  }
+
+  footer{margin:40px 0 20px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.6rem;color:var(--muted);letter-spacing:.06em;}
+  footer a{color:var(--aurora2);text-decoration:none;}
+  footer a:hover{color:var(--aurora1);}
+
+  .fi{animation:fi .6s ease both;}
+  @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}
+
+  @media(max-width:900px){
+    .main-grid{grid-template-columns:1fr;}
+    .alert-bar{flex-wrap:wrap;gap:16px;}
+    .alert-status{margin-left:0;text-align:left;}
+    .thumbs{grid-template-columns:repeat(2,1fr);}
+    .sale-banner {flex-direction: column; align-items: flex-start; gap: 16px;}
+    .sale-btn {width: 100%; text-align: center;}
+  }
+</style>
+</head>
+<body>
+<div class="aurora-bg"></div>
+<div class="wrapper">
+
+  <header class="fi">
+    <div class="logo"><div class="dot"></div>Reykjavik<span class="tv">.tv</span></div>
+    <div class="header-meta">
+      <div class="live">Live</div>
+      <span id="clock">--:--:--</span>
+      <span>64°08'N · 21°56'W</span>
+    </div>
+  </header>
+
+  <div class="alert-bar fi d1">
+    <div class="kp-ring">
+      <svg viewBox="0 0 80 80">
+        <circle class="track" cx="40" cy="40" r="32"/>
+        <circle class="fill" id="kpCircle" cx="40" cy="40" r="32"/>
+      </svg>
+      <div class="kp-label"><span id="kpNow">—</span><small>KP</small></div>
+    </div>
+    <div class="alert-info">
+      <h2 id="aTitle">Loading aurora data…</h2>
+      <p id="aDesc">Fetching real-time geomagnetic data from NOAA SWPC…</p>
+      <div class="meters" id="meters">
+        <div class="mb"></div><div class="mb"></div><div class="mb"></div>
+        <div class="mb"></div><div class="mb"></div><div class="mb"></div>
+        <div class="mb"></div><div class="mb"></div><div class="mb"></div>
+      </div>
+    </div>
+    <div class="alert-status">
+      <div class="badge" id="aBadge">—</div>
+      <small id="kpUp">Updating…</small>
+      <small style="margin-top:4px">Source: NOAA SWPC</small>
+    </div>
+  </div>
+
+  <div class="main-grid fi d2">
+    <div class="cam-col">
+      <div class="cam-card">
+        <div class="cam-head">
+          <div class="cam-name"><div class="dot" style="width:5px;height:5px"></div><strong id="camName">—</strong></div>
+        </div>
+        <div class="cam-embed">
+          <iframe id="camFrame" allow="autoplay; encrypted-media" allowfullscreen title="Reykjavik Live"></iframe>
+        </div>
+        <div class="cam-bar">
+          <span class="loc" id="camLoc">Reykjavik, Iceland</span>
+          <span class="ts" id="localTime">—</span>
+        </div>
+      </div>
+      <div class="thumbs" id="thumbsContainer"></div>
+    </div>
+
+    <div class="sidebar fi d3">
+      <div class="widget">
+        <div class="whead">Weather — Reykjavik <span id="wTime">Live</span></div>
+        <div id="wContent"><div class="loading">Fetching weather…</div></div>
+      </div>
+      <div class="widget">
+        <div class="whead">Aurora Forecast — 24h <span>NOAA SWPC</span></div>
+        <div class="kp-fc" id="kpFc"><div class="loading">Fetching KP data…</div></div>
+      </div>
+      <div class="widget">
+        <div class="whead">Daylight — Today <span id="todayDate">—</span></div>
+        <div class="sunbody" id="sunContent"><div class="loading">Calculating…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sale-banner fi" style="animation-delay: 0.4s;">
+    <div class="sale-text">
+      <h3>Premium Project &amp; Domain For Sale</h3>
+      <p>Like this live aurora tracker concept? The premium domain <strong style="color:var(--text);">Reykjavik.tv</strong> and this complete web system layout are available for purchase.</p>
+    </div>
+    <a href="https://www.afternic.com/domain/REYKJAVIK.TV" target="_blank" class="sale-btn">
+      Make an Offer &rarr;
+    </a>
+  </div>
+
+  <footer>
+    <div>© 2026 <strong style="color:var(--text)">Reykjavik.tv</strong> — Independent live stream &amp; aurora resource</div>
+    <div style="display:flex;gap:20px"><a href="#">About</a><a href="#">Submit your cam</a><a href="#">Aurora alerts via email</a></div>
+  </footer>
+
+</div>
+<script>
+const CAMERAS = [
+  {
+    id: "jAzKkdAMhYI",
+    name: "Reykjavík — Old Harbour",
+    loc: "Reykjavík Harbour",
+    emoji: "⚓",
+    type: "youtube"
+  },
+  {
+    id: "s9yMzjnTbI4",
+    name: "Faxaflói Bay — Akranes",
+    loc: "Faxaflói Bay (Afar.TV)",
+    emoji: "🌊",
+    type: "youtube"
+  },
+  {
+    id: "WEXeZ9BDCAQ",
+    name: "Keflavík International Airport",
+    loc: "Keflavík (LiveCamIs)",
+    emoji: "🛫",
+    type: "youtube"
+  },
+  {
+    id: "Xbd_LBXO9xg",
+    name: "Hella — Aurora Live View",
+    loc: "South Iceland (Afar.TV)",
+    emoji: "🌌",
+    type: "youtube"
+  },
+  {
+    id: "https://www.vegagerdin.is/vefvelar/reykjavik_1.jpg",
+    name: "Reykjavík — City Traffic Cam",
+    loc: "Miklabraut Intersection",
+    emoji: "🚗",
+    type: "image"
+  }
+];
+
+let imageInterval = null;
+
+function initCameras() {
+  const container = document.getElementById('thumbsContainer');
+  container.innerHTML = '';
+
+  CAMERAS.forEach((cam, index) => {
+    const thumb = document.createElement('div');
+    thumb.className = `thumb${index === 0 ? ' on' : ''}`;
+    thumb.innerHTML = `<div class="timg">${cam.emoji}</div><div class="tlbl">${cam.name.split('—')[0]}</div>`;
+    thumb.onclick = () => switchCam(thumb, cam);
+    container.appendChild(thumb);
+  });
+
+  if (CAMERAS.length > 0) {
+    switchCam(container.children[0], CAMERAS[0]);
+  }
+}
+
+function switchCam(element, cam) {
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('on'));
+  if (element) element.classList.add('on');
+
+  document.getElementById('camName').textContent = cam.name;
+  document.getElementById('camLoc').textContent = cam.loc;
+
+  const frame = document.getElementById('camFrame');
+
+  if (imageInterval) {
+    clearInterval(imageInterval);
+    imageInterval = null;
+  }
+
+  if (cam.type === 'youtube') {
+    frame.src = `https://www.youtube.com/embed/${cam.id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`;
+
+  } else if (cam.type === 'image') {
+    const buildSrc = () => {
+      const t = Date.now();
+      return `data:text/html,` + encodeURIComponent(
+        `<!DOCTYPE html><html><head><style>
+          *{margin:0;padding:0;box-sizing:border-box}
+          body{background:#050810;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+          img{width:100%;height:100%;object-fit:cover}
+        </style></head><body>
+          <img src="${cam.id}?t=${t}" alt="Live View" onerror="this.style.opacity='.3'">
+        </body></html>`
+      );
+    };
+
+    frame.src = buildSrc();
+
+    imageInterval = setInterval(() => {
+      frame.src = buildSrc();
+    }, 30000);
+  }
+}
+
+const TZ = 'Atlantic/Reykjavik';
+const pad = n => String(n).padStart(2, '0');
+function rvk() { return new Date(new Date().toLocaleString('en-US', { timeZone: TZ })); }
+
+function tick() {
+  const t = rvk();
+  document.getElementById('clock').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())} RVK`;
+  document.getElementById('localTime').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())} · ${t.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}`;
+  document.getElementById('todayDate').textContent = t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+setInterval(tick, 1000); tick();
+
+const WMO = {0:['☀️','Clear sky'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Foggy'],48:['🌫️','Icy fog'],51:['🌦️','Light drizzle'],53:['🌦️','Drizzle'],55:['🌧️','Heavy drizzle'],61:['🌧️','Light rain'],63:['🌧️','Rain'],65:['🌧️','Heavy rain'],71:['🌨️','Light snow'],73:['❄️','Snow'],75:['❄️','Heavy snow'],77:['🌨️','Snow grains'],80:['🌦️','Rain showers'],81:['🌧️','Heavy showers'],82:['⛈️','Violent showers'],85:['🌨️','Snow showers'],86:['❄️','Heavy snow showers'],95:['⛈️','Thunderstorm'],96:['⛈️','Thunderstorm+hail'],99:['⛈️','Severe thunderstorm']};
+const wdir = d => { const a = ['N','NE','E','SE','S','SW','W','NW']; return a[Math.round(d / 45) % 8]; };
+
+async function loadWeather() {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=64.1355&longitude=-21.8954&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,visibility&daily=weather_code,temperature_2m_max&wind_speed_unit=kmh&timezone=Atlantic%2FReykjavik&forecast_days=5';
+  try {
+    const d = await (await fetch(url)).json();
+    const c = d.current, daily = d.daily;
+    const [ic, dc] = WMO[c.weather_code] || ['🌡️', 'Unknown'];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let fc = '';
+    for (let i = 1; i <= 4; i++) {
+      const dt = new Date(daily.time[i] + 'T12:00:00');
+      const [fi] = WMO[daily.weather_code[i]] || ['🌡️'];
+      fc += `<div class="fday"><div class="dn">${days[dt.getDay()]}</div><div class="di">${fi}</div><div class="dt">${Math.round(daily.temperature_2m_max[i])}°</div></div>`;
+    }
+    document.getElementById('wContent').innerHTML = `
+      <div class="wbody">
+        <div class="now"><div class="wicon">${ic}</div><div><div class="wtemp">${Math.round(c.temperature_
