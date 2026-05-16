@@ -175,7 +175,7 @@
     .main-grid{grid-template-columns:1fr;}
     .alert-bar{flex-wrap:wrap;gap:16px;}
     .alert-status{margin-left:0;text-align:left;}
-    .thumbs{grid-template-columns:repeat(2,1fr);}
+    .thumbs{grid-template-columns:repeat(3,1fr);}
     .sale-banner {flex-direction: column; align-items: flex-start; gap: 16px;}
     .sale-btn {width: 100%; text-align: center;}
   }
@@ -225,7 +225,7 @@
           <div class="cam-name"><div class="dot" style="width:5px;height:5px"></div><strong id="camName">—</strong></div>
         </div>
         <div class="cam-embed">
-          <iframe id="camFrame" allow="autoplay; encrypted-media" allowfullscreen title="Reykjavik Live"></iframe>
+          <iframe id="camFrame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen title="Reykjavik Live"></iframe>
         </div>
         <div class="cam-bar">
           <span class="loc" id="camLoc">Reykjavik, Iceland</span>
@@ -241,7 +241,7 @@
         <div id="wContent"><div class="loading">Fetching weather…</div></div>
       </div>
       <div class="widget">
-        <div class="whead">Aurora Forecast — 24h <span>NOAA SWPC</span></div>
+        <div class="whead">Aurora Forecast — Recent <span>NOAA SWPC</span></div>
         <div class="kp-fc" id="kpFc"><div class="loading">Fetching KP data…</div></div>
       </div>
       <div class="widget">
@@ -270,238 +270,27 @@
 <script>
 const CAMERAS = [
   {
-    id: "https://www.vegagerdin.is/vefvelar/reykjavik_1.jpg",
-    name: "Reykjavík — City Traffic Cam",
-    loc: "Miklabraut Intersection",
-    emoji: "🚗",
-    type: "image"
+    id: "4B-xBkUX4jM",
+    name: "Reykjavík — City View Live",
+    loc: "Reykjavík Centre & Skyline",
+    emoji: "🏙️"
   },
   {
-    id: "s9yMzjnTbI4",
-    name: "Faxaflói Bay — Akranes",
-    loc: "Faxaflói Bay (Afar.TV)",
-    emoji: "🌊",
-    type: "youtube"
+    id: "kXD4A9uFHcg",
+    name: "Iceland — Volcano & Geldingadalir View",
+    loc: "Fagradalsfjall Region",
+    emoji: "🌋"
   },
   {
-    id: "WEXeZ9BDCAQ",
-    name: "Keflavík International Airport",
-    loc: "Keflavík (LiveCamIs)",
-    emoji: "🛫",
-    type: "youtube"
-  },
-  {
-    id: "Xbd_LBXO9xg",
-    name: "Hella — Aurora Live View",
-    loc: "South Iceland (Afar.TV)",
-    emoji: "🌌",
-    type: "youtube"
+    id: "_0EQvcdPl8w",
+    name: "Kirkjufell — Aurora Cam View",
+    loc: "Kirkjufell Mountain, Snæfellsnes",
+    emoji: "🏔️"
   }
 ];
-
-let imageInterval = null;
 
 function initCameras() {
   const container = document.getElementById('thumbsContainer');
   container.innerHTML = '';
 
-  CAMERAS.forEach((cam, index) => {
-    const thumb = document.createElement('div');
-    thumb.className = `thumb${index === 0 ? ' on' : ''}`;
-    thumb.innerHTML = `<div class="timg">${cam.emoji}</div><div class="tlbl">${cam.name.split('—')[0]}</div>`;
-    thumb.onclick = () => switchCam(thumb, cam);
-    container.appendChild(thumb);
-  });
-
-  if (CAMERAS.length > 0) {
-    switchCam(container.children[0], CAMERAS[0]);
-  }
-}
-
-function switchCam(element, cam) {
-  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('on'));
-  if (element) element.classList.add('on');
-
-  document.getElementById('camName').textContent = cam.name;
-  document.getElementById('camLoc').textContent = cam.loc;
-
-  const frame = document.getElementById('camFrame');
-
-  if (imageInterval) {
-    clearInterval(imageInterval);
-    imageInterval = null;
-  }
-
-  if (cam.type === 'youtube') {
-    frame.src = `https://www.youtube.com/embed/${cam.id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`;
-  } else if (cam.type === 'image') {
-    const buildSrc = () => {
-      const t = Date.now();
-      return `data:text/html,` + encodeURIComponent(
-        `<!DOCTYPE html><html><head><style>
-          *{margin:0;padding:0;box-sizing:border-box}
-          body{background:#050810;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-          img{width:100%;height:100%;object-fit:cover}
-        </style></head><body>
-          <img src="${cam.id}?t=${t}" alt="Live View" onerror="this.style.opacity='.3'">
-        </body></html>`
-      );
-    };
-    frame.src = buildSrc();
-    imageInterval = setInterval(() => { frame.src = buildSrc(); }, 30000);
-  }
-}
-
-const TZ = 'Atlantic/Reykjavik';
-const pad = n => String(n).padStart(2, '0');
-function rvk() { return new Date(new Date().toLocaleString('en-US', { timeZone: TZ })); }
-
-function tick() {
-  const t = rvk();
-  document.getElementById('clock').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())} RVK`;
-  document.getElementById('localTime').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())} · ${t.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}`;
-  document.getElementById('todayDate').textContent = t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-}
-setInterval(tick, 1000); tick();
-
-const WMO = {0:['☀️','Clear sky'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Foggy'],48:['🌫️','Icy fog'],51:['🌦️','Light drizzle'],53:['🌦️','Drizzle'],55:['🌧️','Heavy drizzle'],61:['🌧️','Light rain'],63:['🌧️','Rain'],65:['🌧️','Heavy rain'],71:['🌨️','Light snow'],73:['❄️','Snow'],75:['❄️','Heavy snow'],77:['🌨️','Snow grains'],80:['🌦️','Rain showers'],81:['🌧️','Heavy showers'],82:['⛈️','Violent showers'],85:['🌨️','Snow showers'],86:['❄️','Heavy snow showers'],95:['⛈️','Thunderstorm'],96:['⛈️','Thunderstorm+hail'],99:['⛈️','Severe thunderstorm']};
-const wdir = d => { const a = ['N','NE','E','SE','S','SW','W','NW']; return a[Math.round(d / 45) % 8]; };
-
-async function loadWeather() {
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=64.1355&longitude=-21.8954&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,visibility&daily=weather_code,temperature_2m_max&wind_speed_unit=kmh&timezone=Atlantic%2FReykjavik&forecast_days=5';
-  try {
-    const d = await (await fetch(url)).json();
-    const c = d.current, daily = d.daily;
-    const [ic, dc] = WMO[c.weather_code] || ['🌡️', 'Unknown'];
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    let fc = '';
-    for (let i = 1; i <= 4; i++) {
-      const dt = new Date(daily.time[i] + 'T12:00:00');
-      const [fi] = WMO[daily.weather_code[i]] || ['🌡️'];
-      fc += `<div class="fday"><div class="dn">${days[dt.getDay()]}</div><div class="di">${fi}</div><div class="dt">${Math.round(daily.temperature_2m_max[i])}°</div></div>`;
-    }
-    document.getElementById('wContent').innerHTML = `
-      <div class="wbody">
-        <div class="now"><div class="wicon">${ic}</div><div><div class="wtemp">${Math.round(c.temperature_2m)}<small>°C</small></div><div class="wdesc">${dc}</div></div></div>
-        <div class="wstats">
-          <div class="wstat"><div class="wstat-l">Wind</div><div class="wstat-v">${Math.round(c.wind_speed_10m)} km/h ${wdir(c.wind_direction_10m)}</div></div>
-          <div class="wstat"><div class="wstat-l">Humidity</div><div class="wstat-v">${c.relative_humidity_2m}%</div></div>
-          <div class="wstat"><div class="wstat-l">Pressure</div><div class="wstat-v">${Math.round(c.surface_pressure)} hPa</div></div>
-          <div class="wstat"><div class="wstat-l">Visibility</div><div class="wstat-v">${c.visibility != null ? (c.visibility / 1000).toFixed(0) + ' km' : '—'}</div></div>
-        </div>
-        <div class="forecast">${fc}</div>
-      </div>`;
-    const t = rvk();
-    document.getElementById('wTime').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())}`;
-  } catch(e) {
-    console.error(e);
-    document.getElementById('wContent').innerHTML = '<div class="loading">Weather unavailable</div>';
-  }
-}
-
-async function loadKP() {
-  try {
-    const [h, f] = await Promise.all([
-      fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json').then(r => r.json()),
-      fetch('https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json').then(r => r.json())
-    ]).catch(err => { throw err; });
-    
-    const last = h[h.length - 1];
-    const kp = parseFloat(last[1]);
-    const C = 201, off = C - (C * Math.min(kp, 9) / 9);
-    const circ = document.getElementById('kpCircle');
-    if(circ) setTimeout(() => { circ.style.strokeDashoffset = off; }, 300);
-
-    let rc = 'var(--aurora1)';
-    if (kp >= 5) rc = 'var(--warn)';
-    if (kp >= 7) rc = 'var(--danger)';
-    if(circ) circ.style.stroke = rc;
-    document.getElementById('kpNow').textContent = kp.toFixed(1);
-    document.getElementById('kpNow').style.color = rc;
-
-    let title, desc, badge, bc = '';
-    if (kp < 2)      { title = 'Aurora unlikely tonight';  desc = 'Geomagnetic activity is very low. Not visible from Reykjavik.'; badge = 'Quiet'; }
-    else if (kp < 4) { title = 'Aurora possible tonight';  desc = 'Moderate geomagnetic activity. Visible from dark areas outside the city if skies are clear.'; badge = 'Possible'; }
-    else if (kp < 6) { title = 'Aurora likely tonight!';   desc = 'Good geomagnetic activity. Northern lights likely visible from Reykjavik itself. Head out!'; badge = 'Likely'; bc = 'w'; }
-    else             { title = 'Strong aurora storm!';      desc = 'Major geomagnetic storm in progress. Spectacular aurora visible from the city. Go outside now!'; badge = 'Storm!'; bc = 'd'; }
-
-    document.getElementById('aTitle').textContent = title;
-    document.getElementById('aTitle').style.color = rc;
-    document.getElementById('aDesc').textContent = desc;
-    
-    const b = document.getElementById('aBadge');
-    b.textContent = badge;
-    b.className = 'badge' + (bc ? ' ' + bc : '');
-
-    document.querySelectorAll('.mb').forEach((el, i) => {
-      el.classList.remove('a', 'w', 'd');
-      if (i < Math.floor(kp)) {
-        if (kp >= 7) el.classList.add('d');
-        else if (kp >= 5) el.classList.add('w');
-        else el.classList.add('a');
-      }
-    });
-
-    const upd = new Date(last[0] + 'Z');
-    document.getElementById('kpUp').textContent = 'Updated ' + upd.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: TZ }) + ' RVK';
-
-    const rows = f.slice(1).slice(0, 8);
-    const now = Date.now();
-    let fcHTML = '';
-    rows.forEach((r, i) => {
-      const t = new Date(r[0] + 'Z');
-      const dh = Math.round((t - now) / 3600000);
-      const kv = parseFloat(r[1]);
-      const pct = Math.min(kv / 9 * 100, 100);
-      let bs = 'background:linear-gradient(90deg,var(--aurora2),var(--aurora1));box-shadow:0 0 6px var(--aurora1)', vc = 'var(--aurora1)';
-      if (kv >= 5) { bs = 'background:linear-gradient(90deg,var(--warn),#ffcc00);box-shadow:0 0 6px var(--warn)'; vc = 'var(--warn)'; }
-      if (kv >= 7) { bs = 'background:linear-gradient(90deg,var(--danger),#ff8800);box-shadow:0 0 6px var(--danger)'; vc = 'var(--danger)'; }
-      const lbl = i === 0 ? 'Now' : (dh > 0 ? '+' + dh + 'h' : dh + 'h');
-      fcHTML += `<div class="krow"><div class="kt">${lbl}</div><div class="kbw"><div class="kbf" style="width:${pct}%;${bs}"></div></div><div class="kv" style="color:${vc}">${kv.toFixed(1)}</div></div>`;
-    });
-    document.getElementById('kpFc').innerHTML = fcHTML;
-
-  } catch(e) {
-    console.error(e);
-    document.getElementById('kpFc').innerHTML = '<div class="loading">KP data unavailable</div>';
-    document.getElementById('aTitle').textContent = 'Aurora data live';
-    document.getElementById('aDesc').textContent = 'Dusk to dawn tracking active. Check weather for clear visibility windows.';
-    document.getElementById('kpNow').textContent = '3.0';
-    document.getElementById('aBadge').textContent = 'Active';
-  }
-}
-
-function calcSun() {
-  const lat = 64.1355 * Math.PI / 180, lng = -21.8954;
-  const now = rvk();
-  const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
-  const dec = 23.45 * Math.sin((360 / 365 * (doy - 81)) * Math.PI / 180) * Math.PI / 180;
-  const cosH = (Math.cos(90.833 * Math.PI / 180) - Math.sin(lat) * Math.sin(dec)) / (Math.cos(lat) * Math.cos(dec));
-  let sr = '—', ss = '—', dl = '—', dk = '—';
-  if (cosH < -1) { sr = 'Midnight sun'; ss = 'No sunset'; dl = '24h 00m'; dk = '0h 00m'; }
-  else if (cosH > 1) { sr = 'Polar night'; ss = 'No sunrise'; dl = '0h 00m'; dk = '24h 00m'; }
-  else {
-    const H = Math.acos(cosH) * 180 / Math.PI, lo = lng / 15;
-    const su = 12 - H / 15 - lo, se = 12 + H / 15 - lo;
-    const th = h => { const hh = ((Math.floor(h) % 24) + 24) % 24, mm = Math.round((((h % 1) + 1) % 1) * 60); return `${pad(hh)}:${pad(mm)}`; };
-    sr = th(su); ss = th(se);
-    const dh = se - su, nh = 24 - dh;
-    dl = `${Math.floor(dh)}h ${pad(Math.round((dh % 1) * 60))}m`;
-    dk = `${Math.floor(nh)}h ${pad(Math.round((nh % 1) * 60))}m`;
-  }
-  document.getElementById('sunContent').innerHTML = `
-    <div class="srow"><span class="l">🌅 Sunrise</span><span class="v">${sr}</span></div>
-    <div class="srow"><span class="l">🌇 Sunset</span><span class="v">${ss}</span></div>
-    <div class="srow"><span class="l">☀️ Daylight</span><span class="v s">${dl}</span></div>
-    <div class="srow"><span class="l">🌙 Dark hours</span><span class="v">${dk}</span></div>
-    <div class="srow"><span class="l">🔭 Aurora window</span><span class="v s">${ss !== 'No sunset' ? ss + ' – ' + sr : 'Midnight sun'}</span></div>`;
-}
-
-initCameras();
-loadWeather(); loadKP(); calcSun();
-setInterval(loadWeather, 300000);
-setInterval(loadKP, 300000);
-setInterval(calcSun, 300000);
-</script>
-</body>
-</html>
+  CAMERAS.forEach
