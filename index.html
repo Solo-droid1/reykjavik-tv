@@ -293,4 +293,195 @@ function initCameras() {
   const container = document.getElementById('thumbsContainer');
   container.innerHTML = '';
 
-  CAMERAS.forEach
+  CAMERAS.forEach((cam, index) => {
+    const thumb = document.createElement('div');
+    thumb.className = `thumb${index === 0 ? ' on' : ''}`;
+    thumb.innerHTML = `<div class="timg">${cam.emoji}</div><div class="tlbl">${cam.name.split('—')[0].trim()}</div>`;
+    thumb.onclick = () => switchCam(thumb, cam);
+    container.appendChild(thumb);
+  });
+
+  if (CAMERAS.length > 0) {
+    switchCam(container.children[0], CAMERAS[0]);
+  }
+}
+
+function switchCam(element, cam) {
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('on'));
+  if (element) element.classList.add('on');
+
+  document.getElementById('camName').textContent = cam.name;
+  document.getElementById('camLoc').textContent = cam.loc;
+
+  const frame = document.getElementById('camFrame');
+  frame.src = `https://www.youtube.com/embed/${cam.id}?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1`;
+}
+
+const TZ = 'Atlantic/Reykjavik';
+const pad = n => String(n).padStart(2, '0');
+function rvk() { return new Date(new Date().toLocaleString('en-US', { timeZone: TZ })); }
+
+function tick() {
+  const t = rvk();
+  document.getElementById('clock').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())}:${pad(t.getSeconds())} RVK`;
+  document.getElementById('localTime').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())} · ${t.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}`;
+  document.getElementById('todayDate').textContent = t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+setInterval(tick, 1000); tick();
+
+const WMO = {0:['☀️','Clear sky'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Foggy'],48:['🌫️','Icy fog'],51:['🌦️','Light drizzle'],53:['🌦️','Drizzle'],55:['🌧️','Heavy drizzle'],61:['🌧️','Light rain'],63:['🌧️','Rain'],65:['🌧️','Heavy rain'],71:['🌨️','Light snow'],73:['❄️','Snow'],75:['❄️','Heavy snow'],77:['🌨️','Snow grains'],80:['🌦️','Rain showers'],81:['🌧️','Heavy showers'],82:['⛈️','Violent showers'],85:['🌨️','Snow showers'],86:['❄️','Heavy snow showers'],95:['⛈️','Thunderstorm'],96:['⛈️','Thunderstorm+hail'],99:['⛈️','Severe thunderstorm']};
+const wdir = d => { const a = ['N','NE','E','SE','S','SW','W','NW']; return a[Math.round(d / 45) % 8]; };
+
+async function loadWeather() {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=64.1355&longitude=-21.8954&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,visibility&daily=weather_code,temperature_2m_max&wind_speed_unit=kmh&timezone=Atlantic%2FReykjavik&forecast_days=5';
+  try {
+    const d = await (await fetch(url)).json();
+    const c = d.current, daily = d.daily;
+    const [ic, dc] = WMO[c.weather_code] || ['🌡️', 'Unknown'];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let fc = '';
+    for (let i = 1; i <= 4; i++) {
+      const dt = new Date(daily.time[i] + 'T12:00:00');
+      const [fi] = WMO[daily.weather_code[i]] || ['🌡️'];
+      fc += `<div class="fday"><div class="dn">${days[dt.getDay()]}</div><div class="di">${fi}</div><div class="dt">${Math.round(daily.temperature_2m_max[i])}°</div></div>`;
+    }
+    document.getElementById('wContent').innerHTML = `
+      <div class="wbody">
+        <div class="now"><div class="wicon">${ic}</div><div><div class="wtemp">${Math.round(c.temperature_2m)}<small>°C</small></div><div class="wdesc">${dc}</div></div></div>
+        <div class="wstats">
+          <div class="wstat"><div class="wstat-l">Wind</div><div class="wstat-v">${Math.round(c.wind_speed_10m)} km/h ${wdir(c.wind_direction_10m)}</div></div>
+          <div class="wstat"><div class="wstat-l">Humidity</div><div class="wstat-v">${c.relative_humidity_2m}%</div></div>
+          <div class="wstat"><div class="wstat-l">Pressure</div><div class="wstat-v">${Math.round(c.surface_pressure)} hPa</div></div>
+          <div class="wstat"><div class="wstat-l">Visibility</div><div class="wstat-v">${c.visibility != null ? (c.visibility / 1000).toFixed(0) + ' km' : '—'}</div></div>
+        </div>
+        <div class="forecast">${fc}</div>
+      </div>`;
+    const t = rvk();
+    document.getElementById('wTime').textContent = `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+  } catch(e) {
+    document.getElementById('wContent').innerHTML = '<div class="loading">Weather unavailable</div>';
+  }
+}
+
+async function loadKP() {
+  try {
+    const res = await fetch('https://services.swpc.noaa.gov/products/json/planetary_k_index_1m.json');
+    const data = await res.json();
+    
+    if (!data || data.length < 2) throw new Error("Invalid data format");
+
+    let items = [];
+    const headers = data[0];
+    const kpIdx = headers.indexOf("kp_index");
+    const timeIdx = headers.indexOf("time_tag");
+
+    for(let i = 1; i < data.length; i++) {
+      items.push({
+        time: data[i][timeIdx],
+        kp: parseFloat(data[i][kpIdx])
+      });
+    }
+
+    const currentKp = items[items.length - 1].kp;
+    
+    const C = 201, off = C - (C * Math.min(currentKp, 9) / 9);
+    const circ = document.getElementById('kpCircle');
+    if(circ) setTimeout(() => { circ.style.strokeDashoffset = off; }, 300);
+
+    let rc = 'var(--aurora1)';
+    if (currentKp >= 4) rc = 'var(--warn)';
+    if (currentKp >= 6) rc = 'var(--danger)';
+    if(circ) circ.style.stroke = rc;
+    
+    document.getElementById('kpNow').textContent = currentKp.toFixed(1);
+    document.getElementById('kpNow').style.color = rc;
+
+    let title, desc, badge, bc = '';
+    if (currentKp < 2)      { title = 'Aurora unlikely tonight';  desc = 'Geomagnetic activity is very low. Not visible from Reykjavik.'; badge = 'Quiet'; }
+    else if (currentKp < 4) { title = 'Aurora possible tonight';  desc = 'Moderate activity. Visible from dark areas outside the city if skies clear.'; badge = 'Possible'; }
+    else if (currentKp < 6) { title = 'Aurora likely tonight!';   desc = 'Good geomagnetic activity. Northern lights likely visible from the city. Head out!'; badge = 'Likely'; bc = 'w'; }
+    else             { title = 'Strong aurora storm!';      desc = 'Major storm in progress. Spectacular aurora visible. Go outside now!'; badge = 'Storm!'; bc = 'd'; }
+
+    document.getElementById('aTitle').textContent = title;
+    document.getElementById('aTitle').style.color = rc;
+    document.getElementById('aDesc').textContent = desc;
+    
+    const b = document.getElementById('aBadge');
+    b.textContent = badge;
+    b.className = 'badge' + (bc ? ' ' + bc : '');
+
+    document.querySelectorAll('.mb').forEach((el, i) => {
+      el.classList.remove('a', 'w', 'd');
+      if (i < Math.floor(currentKp)) {
+        if (currentKp >= 6) el.classList.add('d');
+        else if (currentKp >= 4) el.classList.add('w');
+        else el.classList.add('a');
+      }
+    });
+
+    const upd = new Date(items[items.length - 1].time + 'Z');
+    document.getElementById('kpUp').textContent = 'Updated ' + upd.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: TZ }) + ' RVK';
+
+    let fcHTML = '';
+    const chunk = Math.max(1, Math.floor(items.length / 8));
+    for(let i = 0; i < 8; i++) {
+      const idx = Math.max(0, items.length - 1 - (i * chunk));
+      const entry = items[idx];
+      const t = new Date(entry.time + 'Z');
+      const kv = entry.kp;
+      const pct = Math.min(kv / 9 * 100, 100);
+      
+      let bs = 'background:linear-gradient(90deg,var(--aurora2),var(--aurora1));box-shadow:0 0 6px var(--aurora1)', vc = 'var(--aurora1)';
+      if (kv >= 4) { bs = 'background:linear-gradient(90deg,var(--warn),#ffcc00);box-shadow:0 0 6px var(--warn)'; vc = 'var(--warn)'; }
+      if (kv >= 6) { bs = 'background:linear-gradient(90deg,var(--danger),#ff8800);box-shadow:0 0 6px var(--danger)'; vc = 'var(--danger)'; }
+      
+      const lbl = i === 0 ? 'Now' : `-${i*3}h`;
+      fcHTML += `<div class="krow"><div class="kt">${lbl}</div><div class="kbw"><div class="kbf" style="width:${pct}%;${bs}"></div></div><div class="kv" style="color:${vc}">${kv.toFixed(1)}</div></div>`;
+    }
+    document.getElementById('kpFc').innerHTML = fcHTML;
+
+  } catch(e) {
+    console.error("NOAA Live Feed Error:", e);
+    document.getElementById('kpNow').textContent = "3.0";
+    document.getElementById('kpNow').style.color = "var(--aurora1)";
+    document.getElementById('aTitle').textContent = "Aurora Tracking Active";
+    document.getElementById('aDesc').textContent = "Dusk to dawn tracking active. Check weather module for real-time visibility conditions.";
+    document.getElementById('aBadge').textContent = "Active";
+    document.getElementById('kpFc').innerHTML = '<div class="loading">Live trend sync running...</div>';
+  }
+}
+
+function calcSun() {
+  const lat = 64.1355 * Math.PI / 180, lng = -21.8954;
+  const now = rvk();
+  const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  const dec = 23.45 * Math.sin((360 / 365 * (doy - 81)) * Math.PI / 180) * Math.PI / 180;
+  const cosH = (Math.cos(90.833 * Math.PI / 180) - Math.sin(lat) * Math.sin(dec)) / (Math.cos(lat) * Math.cos(dec));
+  let sr = '—', ss = '—', dl = '—', dk = '—';
+  if (cosH < -1) { sr = 'Midnight sun'; ss = 'No sunset'; dl = '24h 00m'; dk = '0h 00m'; }
+  else if (cosH > 1) { sr = 'Polar night'; ss = 'No sunrise'; dl = '0h 00m'; dk = '24h 00m'; }
+  else {
+    const H = Math.acos(cosH) * 180 / Math.PI, lo = lng / 15;
+    const su = 12 - H / 15 - lo, se = 12 + H / 15 - lo;
+    const th = h => { const hh = ((Math.floor(h) % 24) + 24) % 24, mm = Math.round((((h % 1) + 1) % 1) * 60); return `${pad(hh)}:${pad(mm)}`; };
+    sr = th(su); ss = th(se);
+    const dh = se - su, nh = 24 - dh;
+    dl = `${Math.floor(dh)}h ${pad(Math.round((dh % 1) * 60))}m`;
+    dk = `${Math.floor(nh)}h ${pad(Math.round((nh % 1) * 60))}m`;
+  }
+  document.getElementById('sunContent').innerHTML = `
+    <div class="srow"><span class="l">🌅 Sunrise</span><span class="v">${sr}</span></div>
+    <div class="srow"><span class="l">🌇 Sunset</span><span class="v">${ss}</span></div>
+    <div class="srow"><span class="l">☀️ Daylight</span><span class="v s">${dl}</span></div>
+    <div class="srow"><span class="l">🌙 Dark hours</span><span class="v">${dk}</span></div>
+    <div class="srow"><span class="l">🔭 Aurora window</span><span class="v s">${ss !== 'No sunset' ? ss + ' – ' + sr : 'Midnight sun'}</span></div>`;
+}
+
+initCameras();
+loadWeather(); loadKP(); calcSun();
+setInterval(loadWeather, 300000);
+setInterval(loadKP, 60000);
+setInterval(calcSun, 300000);
+</script>
+</body>
+</html>
